@@ -1,0 +1,108 @@
+[gd_scene load_steps=16 format=3 uid="uid://d2rer6fbe18je"]
+
+[ext_resource type="Script" path="res://player.gd" id="1_srvhw"]
+[ext_resource type="AudioStream" uid="uid://buuw56u8pf2ix" path="res://sound/lose.ogg" id="2_ur4fm"]
+[ext_resource type="AudioStream" uid="uid://dv5c3swnsn173" path="res://sound/point.ogg" id="3_mfm2h"]
+[ext_resource type="AudioStream" uid="uid://dd4uf88m3hjhe" path="res://sound/engine.ogg" id="4_5ax5f"]
+[ext_resource type="PackedScene" uid="uid://ux6ivcx1ovdp" path="res://Particles/booster_particles.tscn" id="5_u2e8m"]
+[ext_resource type="PackedScene" uid="uid://dcecb8hw7dbrv" path="res://Particles/explosion_particles.tscn" id="6_mqe6i"]
+[ext_resource type="PackedScene" uid="uid://jfwajmrh6ca7" path="res://Particles/success_particles.tscn" id="7_kkl46"]
+[ext_resource type="Material" uid="uid://cwev3vlbr3e68" path="res://ship_grey.tres" id="8_mnvkg"]
+[ext_resource type="Material" uid="uid://dldxvdf4i256" path="res://ship_blue.tres" id="9_43uvw"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_7y514"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_22m0s"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_qsoob"]
+material = ExtResource("8_mnvkg")
+top_radius = 0.0
+bottom_radius = 0.2
+height = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_u7piu"]
+material = ExtResource("9_43uvw")
+top_radius = 0.2
+bottom_radius = 0.2
+height = 1.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ipipk"]
+material = ExtResource("9_43uvw")
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_im1rj"]
+top_radius = 0.25
+bottom_radius = 0.25
+height = 0.3
+
+[node name="Player" type="RigidBody3D"]
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+contact_monitor = true
+max_contacts_reported = 10
+linear_damp = 1.0
+angular_damp = 3.0
+script = ExtResource("1_srvhw")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("CylinderMesh_7y514")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CylinderShape3D_22m0s")
+
+[node name="LoseAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_ur4fm")
+
+[node name="SuccessAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_mfm2h")
+
+[node name="RocketAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_5ax5f")
+
+[node name="BoosterParticles" parent="." instance=ExtResource("5_u2e8m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+emitting = false
+
+[node name="RightBoosterParticles" parent="." instance=ExtResource("5_u2e8m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, -1, 0)
+emitting = false
+
+[node name="LeftBoosterParticles" parent="." instance=ExtResource("5_u2e8m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, -1, 0)
+emitting = false
+
+[node name="ExplosionParticles" parent="." instance=ExtResource("6_mqe6i")]
+
+[node name="SuccessParticles" parent="." instance=ExtResource("7_kkl46")]
+
+[node name="body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("CylinderMesh_qsoob")
+
+[node name="cockpit" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("CylinderMesh_u7piu")
+
+[node name="side_cockpit1" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, -1.5, 0)
+mesh = SubResource("CylinderMesh_ipipk")
+
+[node name="side_cockpit2" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, -1.5, 0)
+mesh = SubResource("CylinderMesh_ipipk")
+
+[node name="ring1" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.61861, 0)
+mesh = SubResource("CylinderMesh_im1rj")
+skeleton = NodePath("../..")
+
+[node name="ring2" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6, 0)
+mesh = SubResource("CylinderMesh_im1rj")
+skeleton = NodePath("../..")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
